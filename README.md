@@ -2,6 +2,11 @@
 
 Et statisk forhåndsvisnings-site der viser, hvordan en Shopify-baseret webshop for håndlavet keramik kunne se ud og navigere. Ikke den endelige butik — bare design og struktur til godkendelse, før det bygges i Shopify.
 
+## Link
+
+https://mathias1801.github.io/Koko_keramik/
+
+
 ## Sider
 
 - `index.html` — Forside
