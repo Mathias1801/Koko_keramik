@@ -255,3 +255,12 @@ section:not(.alt) .value{background:var(--card);}
 .huskeseddel-item{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--line);}
 .huskeseddel-item span{display:block;color:var(--ink-soft);font-size:13px;font-family:var(--font-mono);margin-top:3px;}
 .huskeseddel-remove{background:none;border:none;font-size:18px;cursor:pointer;color:var(--ink-soft);}
+.art-gallery{position:absolute;inset:0;display:flex;flex-direction:column;gap:10px;padding:54px 14px 14px;}
+.art-main{flex:1;overflow:hidden;border-radius:4px;}
+.art-main img{width:100%;height:100%;object-fit:cover;display:block;}
+.art-main-icon{display:flex;align-items:center;justify-content:center;color:var(--clay);opacity:.75;}
+.art-main-icon svg{width:60%;height:60%;}
+.art-thumbs{display:flex;gap:8px;}
+.art-thumb{width:52px;height:52px;flex-shrink:0;border-radius:4px;overflow:hidden;border:1.5px solid transparent;cursor:pointer;padding:0;background:none;}
+.art-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.art-thumb.active{border-color:var(--clay);}
