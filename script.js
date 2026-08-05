@@ -78,7 +78,7 @@ function populateProductPage(){
   const id = params.get('id') || '014';
   const p = PRODUCTS[id] || PRODUCTS['014'];
 
-  document.title = p.navn + ' — Koko Keramik';
+  document.title = p.navn + ' — Sen-keramik';
   const eyebrow = document.getElementById('p-eyebrow');
   if(eyebrow) eyebrow.textContent = p.typeLabel + ' · ' + p.serieLabel;
   const title = document.getElementById('p-title');
@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sendBtn.addEventListener('click', () => {
       const list = getHuskeseddel();
       if(!list.length) return;
-      const subject = encodeURIComponent('Huskeseddel fra Koko Keramik');
+      const subject = encodeURIComponent('Huskeseddel fra Sen-keramik');
       const bodyText = list.map(i => `- ${i.navn} (${i.pris}${i.unika ? ', ' + i.unika : ''})`).join('%0D%0A');
       window.location.href = `mailto:${HUSKESEDDEL_EMAIL}?subject=${subject}&body=${bodyText}`;
     });
