@@ -29,7 +29,7 @@ const PRODUCTS = {
   "landmand": {
     navn:"Landmand",
     pris:"895 kr.",
-    billeder:["images/landmand-front.jpg","images/landmand-bagside.jpg"],
+    billeder:["images/landmand_front_0000002.jpg","images/landmand_bagside_0000003.jpg"],
     icon:"pynt",
     typeLabel:"Pynt", serieLabel:"Pynt-serien", crumbCat:"Pynt", crumbHref:"butik.html#pynt", moreText:"Se mere pynt",
     story:["Skriv historien om denne figur her — hvor og hvornår den blev til, og hvad der gør den særlig."],
@@ -38,7 +38,7 @@ const PRODUCTS = {
   "polka-ocean-kop": {
     navn:"Polka Ocean Kop",
     pris:"299 kr.",
-    billeder:["images/polka-ocean-kop.jpg"],
+    billeder:["images/polka_ocean_kop_0000001.jpg"],
     icon:"kop",
     typeLabel:"Kop", serieLabel:"Kopper-serien", crumbCat:"Kopper", crumbHref:"butik.html#kopper", moreText:"Se flere kopper",
     story:["Skriv historien om denne kop her."],
