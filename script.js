@@ -25,9 +25,52 @@ const PRODUCTS = {
     specs:{maal:"Ø 14 cm",vaegt:"ca. 160 g",glasur:"Solbrændt, mat",braending:"1260°, stentøjsler",egnet:"Indendørs ophæng",lavet:"September 2025"} },
   "019": { navn:"Tekop m. underskål", pris:"310 kr.", icon:"kop", typeLabel:"Kop", serieLabel:"Kopper-serien", crumbCat:"Kopper", crumbHref:"butik.html#kopper", moreText:"Se flere kopper",
     story:["Sælges som sæt — kop og underskål drejet samme dag, så glasuren krakelerer på begge dele på nogenlunde samme måde.","Den blegblå glasur revner i et fint krakeleringsmønster under brændingen, som fremhæves yderligere, når koppen bruges og patineres over tid."],
-    specs:{maal:"Kop Ø 8 cm, underskål Ø 14 cm",vaegt:"ca. 410 g (sæt)",glasur:"Blegblå med krakelering",braending:"1260°, stentøjsler",egnet:"Ovn, mikroovn, opvaskemaskine",lavet:"April 2026"} }
+    specs:{maal:"Kop Ø 8 cm, underskål Ø 14 cm",vaegt:"ca. 410 g (sæt)",glasur:"Blegblå med krakelering",braending:"1260°, stentøjsler",egnet:"Ovn, mikroovn, opvaskemaskine",lavet:"April 2026"} },
+  "landmand": {
+    navn:"Landmand",
+    pris:"895 kr.",
+    billeder:["images/landmand-front.jpg","images/landmand-bagside.jpg"],
+    icon:"pynt",
+    typeLabel:"Pynt", serieLabel:"Pynt-serien", crumbCat:"Pynt", crumbHref:"butik.html#pynt", moreText:"Se mere pynt",
+    story:["Skriv historien om denne figur her — hvor og hvornår den blev til, og hvad der gør den særlig."],
+    specs:{maal:"Udfyld mål",vaegt:"Udfyld vægt",glasur:"Udfyld glasur",braending:"1260°, stentøjsler",egnet:"Udfyld",lavet:"Udfyld dato"}
+  },
+  "polka-ocean-kop": {
+    navn:"Polka Ocean Kop",
+    pris:"299 kr.",
+    billeder:["images/polka-ocean-kop.jpg"],
+    icon:"kop",
+    typeLabel:"Kop", serieLabel:"Kopper-serien", crumbCat:"Kopper", crumbHref:"butik.html#kopper", moreText:"Se flere kopper",
+    story:["Skriv historien om denne kop her."],
+    specs:{maal:"Udfyld mål",vaegt:"Udfyld vægt",glasur:"Turkis/petrol over prikket bund",braending:"1260°, stentøjsler",egnet:"Udfyld",lavet:"Udfyld dato"}
+  }
+  };
+const ART_ICONS = {
+  skaal: '<svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 30c0 0 10 38 45 38s45-38 45-38"/><ellipse cx="60" cy="30" rx="45" ry="9"/><path d="M25 30q10-4 20 0t20 0 20 0" opacity=".5"/><path d="M22 33q10-3 20 1t20 1 20-1" opacity=".3"/></svg>',
+  kop: '<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M35 30c-2 0-3 2-3 5l4 53c.5 6 6 10 14 10h12c8 0 13.5-4 14-10l4-53c0-3-1-5-3-5z"/><path d="M80 42c14 0 18 10 16 20-2 10-12 14-18 12"/><path d="M34 30c0-6 7-10 22-10s22 4 22 10-7 7-22 7-22-1-22-7z"/></svg>',
+  fad: '<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.1"><circle cx="60" cy="60" r="47"/><circle cx="60" cy="60" r="31"/></svg>',
+  pynt: '<svg viewBox="0 0 100 130" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M50 34c18 0 30 16 30 36 0 22-14 36-30 36s-30-14-30-36c0-20 12-36 30-36z"/><path d="M43 20c0-5 3-8 7-8s7 3 7 8v14H43z"/><circle cx="50" cy="10" r="4"/></svg>'
 };
 
+function renderProductArt(p){
+  const gallery = document.getElementById('p-gallery');
+  if(!gallery) return;
+  if(p.billeder && p.billeder.length){
+    let activeIndex = 0;
+    const renderMain = () => {
+      const thumbsHtml = p.billeder.length > 1
+        ? '<div class="art-thumbs">' + p.billeder.map((src,i) => `<button type="button" class="art-thumb${i===activeIndex?' active':''}" data-i="${i}"><img src="${src}" alt=""></button>`).join('') + '</div>'
+        : '';
+      gallery.innerHTML = `<div class="art-main"><img src="${p.billeder[activeIndex]}" alt="${p.navn}"></div>${thumbsHtml}`;
+      gallery.querySelectorAll('.art-thumb').forEach(btn => {
+        btn.addEventListener('click', () => { activeIndex = parseInt(btn.dataset.i,10); renderMain(); });
+      });
+    };
+    renderMain();
+  } else {
+    gallery.innerHTML = `<div class="art-main art-main-icon">${ART_ICONS[p.icon] || ''}</div>`;
+  }
+}
 function populateProductPage(){
   const detail = document.querySelector('.p-detail');
   if(!detail) return;
@@ -57,9 +100,7 @@ function populateProductPage(){
   if(crumbCat){ crumbCat.href = p.crumbHref; crumbCat.textContent = p.crumbCat; }
   const crumbName = document.getElementById('p-crumb-name');
   if(crumbName) crumbName.textContent = p.navn;
-  document.querySelectorAll('.art-icon').forEach(svg => {
-    svg.style.display = svg.dataset.icon === p.icon ? 'block' : 'none';
-  });
+  renderProductArt(p);
 }
 // Mobile nav toggle
 document.addEventListener('DOMContentLoaded', () => {
