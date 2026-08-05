@@ -174,7 +174,7 @@ footer{border-top:1px solid var(--line);padding:68px 0 36px;}
 @media (max-width:560px){.product-grid{grid-template-columns:1fr;}}
 
 .p-detail{display:grid;grid-template-columns:1fr 1fr;gap:70px;padding-top:40px;padding-bottom:90px;align-items:start;}
-.p-detail .art{background:var(--card);aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 1px 0 var(--line) inset;}
+.p-detail .art{background:#fff;aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 1px 0 var(--line) inset;}
 .p-detail .art svg.art-icon{width:54%;color:var(--clay);opacity:.75;display:none;}
 .p-detail .price{font-family:var(--font-mono);font-size:22px;margin:16px 0 24px;color:var(--ink-soft);}
 .spec-list{border-top:1px solid var(--line);margin-top:30px;}
@@ -256,11 +256,11 @@ section:not(.alt) .value{background:var(--card);}
 .huskeseddel-item span{display:block;color:var(--ink-soft);font-size:13px;font-family:var(--font-mono);margin-top:3px;}
 .huskeseddel-remove{background:none;border:none;font-size:18px;cursor:pointer;color:var(--ink-soft);}
 .art-gallery{position:absolute;inset:0;display:flex;flex-direction:column;gap:10px;padding:54px 14px 14px;}
-.art-main{flex:1;overflow:hidden;border-radius:4px;}
-.art-main img{width:100%;height:100%;object-fit:cover;display:block;}
+.art-main{flex:1;overflow:hidden;border-radius:4px;background:#fff;}
+.art-main img{width:100%;height:100%;object-fit:contain;display:block;}
 .art-main-icon{display:flex;align-items:center;justify-content:center;color:var(--clay);opacity:.75;}
 .art-main-icon svg{width:60%;height:60%;}
 .art-thumbs{display:flex;gap:8px;}
-.art-thumb{width:52px;height:52px;flex-shrink:0;border-radius:4px;overflow:hidden;border:1.5px solid transparent;cursor:pointer;padding:0;background:none;}
-.art-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.art-thumb{width:52px;height:52px;flex-shrink:0;border-radius:4px;overflow:hidden;border:1.5px solid transparent;cursor:pointer;padding:0;background:#fff;}
+.art-thumb img{width:100%;height:100%;object-fit:contain;display:block;}
 .art-thumb.active{border-color:var(--clay);}
