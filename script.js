@@ -1,50 +1,80 @@
-const PRODUCTS = {
-  "014": { navn:"Bølgeskål i havblå", pris:"385 kr.", icon:"skaal", typeLabel:"Skål", serieLabel:"Kopper & Skåle-serien", crumbCat:"Skåle", crumbHref:"butik.html#skaale", moreText:"Se flere skåle",
-    story:["Drejet en tidlig morgen i marts, hvor lyset faldt skævt ind gennem værkstedsvinduet. Leret var lidt koldere end normalt den dag, og det satte sit præg på formen — kanten blev en smule mere ujævn end planlagt, hvilket vi endte med at elske.","Glasuren er blandet i hånden ud fra tre forskellige blå oxider for at efterligne vandets bevægelse. Fordi glasuren opfører sig lidt forskelligt hver gang den brændes, får netop denne skål et mønster, der aldrig kan gentages præcist — hverken af os eller nogen andre."],
-    specs:{maal:"Ø 22 cm, højde 8 cm",vaegt:"ca. 540 g",glasur:"Håndblandet, havblå",braending:"1260°, stentøjsler",egnet:"Ovn, mikroovn, opvaskemaskine",lavet:"Marts 2026"} },
-  "021": { navn:"Morgenkop, jordbrun", pris:"245 kr.", icon:"kop", typeLabel:"Kop", serieLabel:"Kopper-serien", crumbCat:"Kopper", crumbHref:"butik.html#kopper", moreText:"Se flere kopper",
-    story:["En tykvægget morgenkop, formet så den ligger godt i hånden fra første slurk kaffe. Den rå lerkant ved foden er bevidst ikke glaseret — en påmindelse om, at koppen startede som almindeligt ler.","Jordbrun glasur, brændt så overfladen får en let ru struktur foroven og et blødt skær forneden. Rummer 3 dl."],
-    specs:{maal:"Ø 8.5 cm, højde 9 cm",vaegt:"ca. 320 g",glasur:"Jordbrun, mat",braending:"1260°, stentøjsler",egnet:"Ovn, mikroovn, opvaskemaskine",lavet:"Februar 2026"} },
-  "009": { navn:"Fladt serveringsfad", pris:"420 kr.", icon:"fad", typeLabel:"Fad", serieLabel:"Fade & tallerken-serien", crumbCat:"Fade & tallerkener", crumbHref:"butik.html#fade", moreText:"Se flere fade",
-    story:["Et bredt, fladt fad tænkt til at samle folk om bordet — perfekt til brød, oste eller frugt. Den brede rand giver god plads til at gribe fat, uden at indholdet risikerer at rulle af.","Glaseret i et enkelt, roligt udtryk, så fadet fungerer som en stille baggrund for det, det bærer frem."],
-    specs:{maal:"Ø 30 cm, højde 3 cm",vaegt:"ca. 780 g",glasur:"Mat, sandtonet",braending:"1260°, stentøjsler",egnet:"Ovn, mikroovn, opvaskemaskine",lavet:"Januar 2026"} },
-  "031": { navn:"Julekugle, mat hvid", pris:"165 kr.", icon:"pynt", typeLabel:"Pynt", serieLabel:"Pynt-serien", crumbCat:"Pynt", crumbHref:"butik.html#pynt", moreText:"Se mere pynt",
-    story:["En hånddrejet julekugle med en let struktureret, mat hvid overflade — et roligt modstykke til det blanke og skinnende, som ellers fylder juletræet.","Hængt op med naturgarn, så den kan gå i arv fra sæson til sæson uden at blive slidt."],
-    specs:{maal:"Ø 7 cm",vaegt:"ca. 90 g",glasur:"Mat hvid",braending:"1260°, stentøjsler",egnet:"Indendørs ophæng",lavet:"November 2025"} },
-  "017": { navn:"Espressokop, mosgrøn", pris:"195 kr.", icon:"kop", typeLabel:"Kop", serieLabel:"Kopper-serien", crumbCat:"Kopper", crumbHref:"butik.html#kopper", moreText:"Se flere kopper",
-    story:["Lille og tætsiddende — formet til den koncentrerede espresso-slurk snarere end den lange kaffepause. Hanken er trukket tæt ind til koppens krop, så den ligger stabilt mellem to fingre.","Den mosgrønne glasur mørkner let ned mod foden, hvor glasuren samler sig tykkere under brændingen."],
-    specs:{maal:"Ø 6 cm, højde 5.5 cm",vaegt:"ca. 140 g",glasur:"Mosgrøn",braending:"1260°, stentøjsler",egnet:"Ovn, mikroovn, opvaskemaskine",lavet:"Marts 2026"} },
-  "026": { navn:"Morgenmadsskål, sandbeige", pris:"255 kr.", icon:"skaal", typeLabel:"Skål", serieLabel:"Kopper & Skåle-serien", crumbCat:"Skåle", crumbHref:"butik.html#skaale", moreText:"Se flere skåle",
-    story:["En mindre skål i hverdagsformat — den rette størrelse til havregryn, yoghurt eller frugtsalat. Den sandbeige glasur er holdt bevidst enkel, så skålen passer ind uanset resten af bordet.","Kanten er let udadbøjet, så skålen er nem at spise direkte af."],
-    specs:{maal:"Ø 15 cm, højde 6 cm",vaegt:"ca. 310 g",glasur:"Sandbeige, mat",braending:"1260°, stentøjsler",egnet:"Ovn, mikroovn, opvaskemaskine",lavet:"December 2025"} },
-  "004": { navn:"Lille tallerken, oxidrød", pris:"210 kr.", icon:"fad", typeLabel:"Tallerken", serieLabel:"Fade & tallerken-serien", crumbCat:"Fade & tallerkener", crumbHref:"butik.html#fade", moreText:"Se flere tallerkener",
-    story:["En lille tallerken til forret eller kage — kompakt nok til at stå fint ved siden af en kop kaffe, men med nok plads til, at maden ikke skubbes ud over kanten.","Den oxidrøde glasur varierer fra dyb rødbrun til et næsten sort skær, alt efter hvor tykt glasuren er lagt på."],
-    specs:{maal:"Ø 18 cm",vaegt:"ca. 380 g",glasur:"Oxidrød",braending:"1260°, stentøjsler",egnet:"Ovn, mikroovn, opvaskemaskine",lavet:"Oktober 2025"} },
-  "033": { navn:"Vægornament, solbrændt", pris:"220 kr.", icon:"pynt", typeLabel:"Pynt", serieLabel:"Pynt-serien", crumbCat:"Pynt", crumbHref:"butik.html#pynt", moreText:"Se mere pynt",
-    story:["Et rundt vægornament i en solbrændt, jordfarvet glasur — tænkt som et lille, stille blikfang på en ellers bar væg.","Hængt på en læderrem, så det kan hænges direkte på et søm eller bindes fast til en gren."],
-    specs:{maal:"Ø 14 cm",vaegt:"ca. 160 g",glasur:"Solbrændt, mat",braending:"1260°, stentøjsler",egnet:"Indendørs ophæng",lavet:"September 2025"} },
-  "019": { navn:"Tekop m. underskål", pris:"310 kr.", icon:"kop", typeLabel:"Kop", serieLabel:"Kopper-serien", crumbCat:"Kopper", crumbHref:"butik.html#kopper", moreText:"Se flere kopper",
-    story:["Sælges som sæt — kop og underskål drejet samme dag, så glasuren krakelerer på begge dele på nogenlunde samme måde.","Den blegblå glasur revner i et fint krakeleringsmønster under brændingen, som fremhæves yderligere, når koppen bruges og patineres over tid."],
-    specs:{maal:"Kop Ø 8 cm, underskål Ø 14 cm",vaegt:"ca. 410 g (sæt)",glasur:"Blegblå med krakelering",braending:"1260°, stentøjsler",egnet:"Ovn, mikroovn, opvaskemaskine",lavet:"April 2026"} },
-  "landmand": {
-    navn:"Landmand",
-    pris:"895 kr.",
-    billeder:["images/landmand_front_0000002.jpg","images/landmand_bagside_0000003.jpg"],
-    icon:"pynt",
-    typeLabel:"Pynt", serieLabel:"Pynt-serien", crumbCat:"Pynt", crumbHref:"butik.html#pynt", moreText:"Se mere pynt",
-    story:["Skriv historien om denne figur her — hvor og hvornår den blev til, og hvad der gør den særlig."],
-    specs:{maal:"Udfyld mål",vaegt:"Udfyld vægt",glasur:"Udfyld glasur",braending:"1260°, stentøjsler",egnet:"Udfyld",lavet:"Udfyld dato"}
+const PRODUCTS_JSON_URL = "data/master_products.json";
+
+const FALLBACK_PRODUCTS = {
+  "1": {
+    navn:"Landmand", pris:"795 kr.",
+    billeder:["images/2.1.jpg","images/2.2.jpg"],
+    icon:"pynt", typeLabel:"Pynt", serieLabel:"Pynt-serien", crumbCat:"Pynt", crumbHref:"butik.html#pynt", moreText:"Se mere pynt", cat:"pynt",
+    maal:{hoejde:"",bredde:"",laengde:"30"}, vaegt:"", farver:["Blå","Terrakotta","Sand"],
+    specs:{glasur:"",braending:"1220°, stentøjsler",egnet:"Dekoration",lavet:""},
+    story:["Mød Landmanden – en charmerende og detaljeret håndlavet figur i smækbukser."]
   },
-  "polka-ocean-kop": {
-    navn:"Polka Ocean Kop",
-    pris:"299 kr.",
-    billeder:["images/polka_ocean_kop_0000001.jpg"],
-    icon:"kop",
-    typeLabel:"Kop", serieLabel:"Kopper-serien", crumbCat:"Kopper", crumbHref:"butik.html#kopper", moreText:"Se flere kopper",
-    story:["Skriv historien om denne kop her."],
-    specs:{maal:"Udfyld mål",vaegt:"Udfyld vægt",glasur:"Turkis/petrol over prikket bund",braending:"1260°, stentøjsler",egnet:"Udfyld",lavet:"Udfyld dato"}
+  "2": {
+    navn:"Polka Ocean Kop", pris:"299 kr.",
+    billeder:["images/1.1.jpg"],
+    icon:"kop", typeLabel:"Kopper", serieLabel:"Kopper-serien", crumbCat:"Kopper", crumbHref:"butik.html#kopper", moreText:"Se flere kopper", cat:"kop",
+    maal:{hoejde:"",bredde:"",laengde:"8"}, vaegt:"", farver:["Turkis","Sort","Sand"],
+    specs:{glasur:"Turkis/petrol over prikket bund",braending:"1220°, stentøjsler",egnet:"Varme og kolde drikke",lavet:""},
+    story:["Mød Polka Ocean Kop – en unik, håndlavet kop med et strand-inspireret udtryk."]
   }
+};
+
+let PRODUCTS = {};
+
+function splitList(value){
+  return (value || '').split('|').map(s => s.trim()).filter(Boolean);
+}
+
+function slugify(value){
+  return (value || '')
+    .toString().trim().toLowerCase()
+    .replace(/æ/g,'ae').replace(/ø/g,'oe').replace(/å/g,'aa')
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/^-+|-+$/g,'');
+}
+
+function rowToProduct(row){
+  const catSlug = slugify(row.gen_kat);
+  const subLabel = (row.sub_kat && row.sub_kat.trim()) ? row.sub_kat.trim() : row.gen_kat;
+  return {
+    navn: row.navn,
+    pris: row.pris,
+    icon: (row.icon && row.icon.trim()) ? row.icon.trim() : catSlug,
+    typeLabel: subLabel,
+    serieLabel: row.kollektion,
+    crumbCat: subLabel,
+    crumbHref: (row.crumb_href && row.crumb_href.trim()) ? row.crumb_href.trim() : `butik.html#${catSlug}`,
+    moreText: (row.more_text && row.more_text.trim()) ? row.more_text.trim() : `Se flere ${(subLabel || '').toLowerCase()}`,
+billeder: splitList(row.billed_id).map(bid => `images/${bid}.jpg`),    farver: splitList(row.farver),
+    maal: { hoejde: row.maal_h, bredde: row.maal_b, laengde: row.maal_l },
+    volume: row.volume,
+    vaegt: row.vaegt,
+    specs: { glasur: row.glasur, braending: row.braending, egnet: row.egnet, lavet: row.lavet },
+    story: splitList(row.story),
+    cat: catSlug,
+    paaVarelager: (row.på_varelager || '').trim().toUpperCase() === 'TRUE'
   };
+}
+
+async function loadProducts(){
+  if(Object.keys(PRODUCTS).length) return;
+  try{
+    const res = await fetch(PRODUCTS_JSON_URL);
+    if(!res.ok) throw new Error('Kunne ikke hente produktdata');
+    const data = await res.json();
+    const result = {};
+    data.forEach(row => {
+      if(!row.id) return;
+      const product = rowToProduct(row);
+      if(!product.paaVarelager) return; // skjul udsolgte/ikke-udgivne stykker
+      result[row.id.trim()] = product;
+    });
+    PRODUCTS = Object.keys(result).length ? result : FALLBACK_PRODUCTS;
+  }catch(err){
+    console.warn('Kunne ikke hente produkter fra master-filen, bruger fallback-data.', err);
+    PRODUCTS = FALLBACK_PRODUCTS;
+  }
+}
 const ART_ICONS = {
   skaal: '<svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 30c0 0 10 38 45 38s45-38 45-38"/><ellipse cx="60" cy="30" rx="45" ry="9"/><path d="M25 30q10-4 20 0t20 0 20 0" opacity=".5"/><path d="M22 33q10-3 20 1t20 1 20-1" opacity=".3"/></svg>',
   kop: '<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M35 30c-2 0-3 2-3 5l4 53c.5 6 6 10 14 10h12c8 0 13.5-4 14-10l4-53c0-3-1-5-3-5z"/><path d="M80 42c14 0 18 10 16 20-2 10-12 14-18 12"/><path d="M34 30c0-6 7-10 22-10s22 4 22 10-7 7-22 7-22-1-22-7z"/></svg>',
@@ -71,14 +101,16 @@ function renderProductArt(p){
     gallery.innerHTML = `<div class="art-main art-main-icon">${ART_ICONS[p.icon] || ''}</div>`;
   }
 }
-function populateProductPage(){
+async function populateProductPage(){
   const detail = document.querySelector('.p-detail');
   if(!detail) return;
+  await loadProducts();
   const params = new URLSearchParams(window.location.search);
-  const id = params.get('id') || '014';
-  const p = PRODUCTS[id] || PRODUCTS['014'];
+  const id = params.get('id') || Object.keys(PRODUCTS)[0];
+  const p = PRODUCTS[id] || PRODUCTS[Object.keys(PRODUCTS)[0]];
+  if(!p) return;
 
-  document.title = p.navn + ' — Sen-keramik';
+  document.title = p.navn + ' — Koko Keramik';
   const eyebrow = document.getElementById('p-eyebrow');
   if(eyebrow) eyebrow.textContent = p.typeLabel + ' · ' + p.serieLabel;
   const title = document.getElementById('p-title');
@@ -86,14 +118,26 @@ function populateProductPage(){
   const price = document.getElementById('p-price');
   if(price) price.textContent = p.pris;
   const unika = document.getElementById('p-unika');
-  if(unika) unika.textContent = 'Unika nr. ' + id + ' — solgt kun én gang';
+  if(unika) unika.textContent = 'Unika ' + id + ' — solgt kun én gang';
   const story = document.getElementById('p-story');
   if(story) story.innerHTML = p.story.map(t => '<p>' + t + '</p>').join('');
-  const specMap = { 'p-maal':'maal','p-vaegt':'vaegt','p-glasur':'glasur','p-braending':'braending','p-egnet':'egnet','p-lavet':'lavet' };
-  Object.keys(specMap).forEach(elId => {
-    const el = document.getElementById(elId);
-    if(el) el.textContent = p.specs[specMap[elId]];
-  });
+  const maal = document.getElementById('p-maal');
+  if(maal){
+    const dims = [p.maal.hoejde, p.maal.bredde, p.maal.laengde].filter(Boolean);
+    maal.textContent = dims.length ? dims.join(' × ') + ' cm' : '–';
+  }
+  const vaegt = document.getElementById('p-vaegt');
+  if(vaegt) vaegt.textContent = p.vaegt || '–';
+  const farver = document.getElementById('p-farver');
+  if(farver) farver.textContent = p.farver.length ? p.farver.join(', ') : '–';
+  const glasur = document.getElementById('p-glasur');
+  if(glasur) glasur.textContent = p.specs.glasur || '–';
+  const braending = document.getElementById('p-braending');
+  if(braending) braending.textContent = p.specs.braending || '–';
+  const egnet = document.getElementById('p-egnet');
+  if(egnet) egnet.textContent = p.specs.egnet || '–';
+  const lavet = document.getElementById('p-lavet');
+  if(lavet) lavet.textContent = p.specs.lavet || '–';
   const moreLink = document.getElementById('p-more-link');
   if(moreLink){ moreLink.href = p.crumbHref; moreLink.textContent = p.moreText; }
   const crumbCat = document.getElementById('p-crumb-cat');
@@ -102,6 +146,43 @@ function populateProductPage(){
   if(crumbName) crumbName.textContent = p.navn;
   renderProductArt(p);
 }
+
+async function renderShopGrid(){
+  const grid = document.querySelector('.product-grid');
+  if(!grid) return;
+  await loadProducts();
+  grid.innerHTML = Object.keys(PRODUCTS).map(id => {
+    const p = PRODUCTS[id];
+    const img = p.billeder && p.billeder[0]
+      ? `<img src="${p.billeder[0]}" alt="${p.navn}" style="width:100%;height:100%;object-fit:cover;">`
+      : (ART_ICONS[p.icon] || '');
+    const desc = (p.story && p.story[0]) ? p.story[0].slice(0,90) + '…' : '';
+    return `
+      <a href="produkt.html?id=${id}" class="p-card" data-cat="${p.cat}">
+        <div class="thumb"><span class="stock">Unika · ${p.navn}</span>${img}</div>
+        <div class="row"><h3>${p.navn}</h3><span class="price">${p.pris}</span></div>
+        <div class="cat">${p.typeLabel}</div>
+        <p class="desc">${desc}</p>
+      </a>`;
+  }).join('');
+  setupShopFilter();
+}
+
+function setupShopFilter(){
+  const tabs = document.querySelectorAll('.tab');
+  const cards = document.querySelectorAll('.p-card');
+  const applyFilter = (cat) => {
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.cat === cat));
+    cards.forEach(card => {
+      const show = cat === 'alle' || card.dataset.cat === cat;
+      card.style.display = show ? '' : 'none';
+    });
+  };
+  tabs.forEach(tab => tab.addEventListener('click', () => applyFilter(tab.dataset.cat)));
+  const hash = window.location.hash.replace('#', '');
+  applyFilter(hash && document.querySelector(`.tab[data-cat="${hash}"]`) ? hash : 'alle');
+}
+
 // Mobile nav toggle
 document.addEventListener('DOMContentLoaded', () => {
   populateProductPage();
@@ -143,21 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
     revealItems.forEach(el => el.classList.add('in'));
   }
 
-  // Shop category filter (only present on butik.html)
-  const tabs = document.querySelectorAll('.tab');
-  const cards = document.querySelectorAll('.p-card');
-  const applyFilter = (cat) => {
-    tabs.forEach(t => t.classList.toggle('active', t.dataset.cat === cat));
-    cards.forEach(card => {
-      const show = cat === 'alle' || card.dataset.cat === cat;
-      card.style.display = show ? '' : 'none';
-    });
-  };
-  if (tabs.length && cards.length) {
-    tabs.forEach(tab => tab.addEventListener('click', () => applyFilter(tab.dataset.cat)));
-    const hash = window.location.hash.replace('#', '');
-    if (hash && document.querySelector(`.tab[data-cat="${hash}"]`)) applyFilter(hash);
-  }
+ renderShopGrid();
 
   // Demo contact form — prevent real submit, show a styled confirmation
   const form = document.querySelector('#demo-form');
