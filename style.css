@@ -158,6 +158,10 @@ footer{border-top:1px solid var(--line);padding:68px 0 36px;}
 .tab{padding:10px 20px;border:1px solid var(--line);border-radius:999px;cursor:pointer;background:transparent;color:var(--ink-soft);transition:all .25s ease;}
 .tab:hover{border-color:var(--clay);color:var(--clay);}
 .tab.active{background:var(--ink);border-color:var(--ink);color:var(--bone);}
+.subtabs{display:flex;gap:8px;flex-wrap:wrap;margin:-28px 0 44px;font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;}
+.subtab{padding:7px 16px;border:1px solid var(--line);border-radius:999px;cursor:pointer;background:var(--bone-deep);color:var(--ink-soft);transition:all .25s ease;}
+.subtab:hover{border-color:var(--clay);color:var(--clay);}
+.subtab.active{background:var(--clay);border-color:var(--clay);color:var(--card);}
 
 .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:44px 30px;}
 .p-card{cursor:pointer;}
