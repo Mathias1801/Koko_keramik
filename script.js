@@ -1,10 +1,29 @@
 const PRODUCTS_JSON_URL = "data/master_products.json";
 
+// Canonical categories. hasSub = true means it splits into med/uden hank.
+const CATEGORY_LABELS = {
+  kopper: 'Kopper', maelkekander: 'Mælkekande', shotglas: 'Shotglas',
+  skaale: 'Skåle', fade: 'Fade', figurer: 'Figurer', pynt: 'Pynt', vindspil: 'Vindspil'
+};
+const HANK_CATS = ['kopper', 'maelkekander', 'shotglas'];
+
+// Maps messy/varied sheet text (Kop, kopper, Kopper...) onto one canonical slug.
+const CATEGORY_ALIASES = {
+  kop: 'kopper', kopper: 'kopper',
+  maelkekande: 'maelkekander', maelkekander: 'maelkekander', maelkekand: 'maelkekander',
+  shotglas: 'shotglas',
+  skaal: 'skaale', skaale: 'skaale', skaaler: 'skaale',
+  fad: 'fade', fade: 'fade',
+  figur: 'figurer', figurer: 'figurer',
+  pynt: 'pynt',
+  vindspil: 'vindspil'
+};
+
 const FALLBACK_PRODUCTS = {
   "1": {
     navn:"Landmand", pris:"795 kr.",
     billeder:["images/2.1.jpg","images/2.2.jpg"],
-    icon:"pynt", typeLabel:"Pynt", serieLabel:"Pynt-serien", crumbCat:"Pynt", crumbHref:"butik.html#pynt", moreText:"Se mere pynt", cat:"pynt",
+    icon:"pynt", typeLabel:"Pynt", serieLabel:"Pynt-serien", crumbCat:"Pynt", crumbHref:"butik.html#pynt", moreText:"Se mere pynt", cat:"pynt", subCat:"",
     maal:{hoejde:"",bredde:"",laengde:"30"}, vaegt:"", farver:["Blå","Terrakotta","Sand"],
     specs:{glasur:"",braending:"1220°, stentøjsler",egnet:"Dekoration",lavet:""},
     story:["Mød Landmanden – en charmerende og detaljeret håndlavet figur i smækbukser."]
@@ -12,7 +31,7 @@ const FALLBACK_PRODUCTS = {
   "2": {
     navn:"Polka Ocean Kop", pris:"299 kr.",
     billeder:["images/1.1.jpg"],
-    icon:"kop", typeLabel:"Kopper", serieLabel:"Kopper-serien", crumbCat:"Kopper", crumbHref:"butik.html#kopper", moreText:"Se flere kopper", cat:"kop",
+    icon:"kopper", typeLabel:"Kopper", serieLabel:"Kopper-serien", crumbCat:"Kopper", crumbHref:"butik.html#kopper", moreText:"Se flere kopper", cat:"kopper", subCat:"",
     maal:{hoejde:"",bredde:"",laengde:"8"}, vaegt:"", farver:["Turkis","Sort","Sand"],
     specs:{glasur:"Turkis/petrol over prikket bund",braending:"1220°, stentøjsler",egnet:"Varme og kolde drikke",lavet:""},
     story:["Mød Polka Ocean Kop – en unik, håndlavet kop med et strand-inspireret udtryk."]
@@ -25,33 +44,49 @@ function splitList(value){
   return (value || '').split('|').map(s => s.trim()).filter(Boolean);
 }
 
-function slugify(value){
+function normalizeText(value){
   return (value || '')
     .toString().trim().toLowerCase()
     .replace(/æ/g,'ae').replace(/ø/g,'oe').replace(/å/g,'aa')
-    .replace(/[^a-z0-9]+/g,'-')
-    .replace(/^-+|-+$/g,'');
+    .replace(/[^a-z]/g,'');
+}
+
+function resolveCategory(genKat){
+  const norm = normalizeText(genKat);
+  return CATEGORY_ALIASES[norm] || 'pynt';
+}
+
+function resolveSubCat(subKat){
+  const norm = normalizeText(subKat);
+  if(norm.includes('udenhank')) return 'uden-hank';
+  if(norm.includes('medhank')) return 'med-hank';
+  return '';
 }
 
 function rowToProduct(row){
-  const catSlug = slugify(row.gen_kat);
-  const subLabel = (row.sub_kat && row.sub_kat.trim()) ? row.sub_kat.trim() : row.gen_kat;
+  const cat = resolveCategory(row.gen_kat);
+  const subCat = HANK_CATS.includes(cat) ? resolveSubCat(row.sub_kat) : '';
+  const label = CATEGORY_LABELS[cat] || row.gen_kat || '';
+  const crumbHref = `butik.html#${cat}${subCat ? '-' + subCat : ''}`;
+
   return {
     navn: row.navn,
     pris: row.pris,
-    icon: (row.icon && row.icon.trim()) ? row.icon.trim() : catSlug,
-    typeLabel: subLabel,
+    icon: (row.icon && row.icon.trim()) ? row.icon.trim() : cat,
+    typeLabel: label,
     serieLabel: row.kollektion,
-    crumbCat: subLabel,
-    crumbHref: (row.crumb_href && row.crumb_href.trim()) ? row.crumb_href.trim() : `butik.html#${catSlug}`,
-    moreText: (row.more_text && row.more_text.trim()) ? row.more_text.trim() : `Se flere ${(subLabel || '').toLowerCase()}`,
-billeder: splitList(row.billed_id).map(bid => `images/${bid}.jpg`),    farver: splitList(row.farver),
+    crumbCat: label,
+    crumbHref: crumbHref,
+    moreText: `Se flere ${label.toLowerCase()}`,
+    billeder: splitList(row.billed_id).map(bid => `images/${bid}.jpg`),
+    farver: splitList(row.farver),
     maal: { hoejde: row.maal_h, bredde: row.maal_b, laengde: row.maal_l },
     volume: row.volume,
     vaegt: row.vaegt,
     specs: { glasur: row.glasur, braending: row.braending, egnet: row.egnet, lavet: row.lavet },
     story: splitList(row.story),
-    cat: catSlug,
+    cat: cat,
+    subCat: subCat,
     paaVarelager: (row.på_varelager || '').trim().toUpperCase() === 'TRUE'
   };
 }
@@ -66,7 +101,7 @@ async function loadProducts(){
     data.forEach(row => {
       if(!row.id) return;
       const product = rowToProduct(row);
-      if(!product.paaVarelager) return; // skjul udsolgte/ikke-udgivne stykker
+      if(!product.paaVarelager) return; // skjul udsolgte stykker
       result[row.id.trim()] = product;
     });
     PRODUCTS = Object.keys(result).length ? result : FALLBACK_PRODUCTS;
@@ -76,10 +111,14 @@ async function loadProducts(){
   }
 }
 const ART_ICONS = {
-  skaal: '<svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 30c0 0 10 38 45 38s45-38 45-38"/><ellipse cx="60" cy="30" rx="45" ry="9"/><path d="M25 30q10-4 20 0t20 0 20 0" opacity=".5"/><path d="M22 33q10-3 20 1t20 1 20-1" opacity=".3"/></svg>',
-  kop: '<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M35 30c-2 0-3 2-3 5l4 53c.5 6 6 10 14 10h12c8 0 13.5-4 14-10l4-53c0-3-1-5-3-5z"/><path d="M80 42c14 0 18 10 16 20-2 10-12 14-18 12"/><path d="M34 30c0-6 7-10 22-10s22 4 22 10-7 7-22 7-22-1-22-7z"/></svg>',
-  fad: '<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.1"><circle cx="60" cy="60" r="47"/><circle cx="60" cy="60" r="31"/></svg>',
-  pynt: '<svg viewBox="0 0 100 130" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M50 34c18 0 30 16 30 36 0 22-14 36-30 36s-30-14-30-36c0-20 12-36 30-36z"/><path d="M43 20c0-5 3-8 7-8s7 3 7 8v14H43z"/><circle cx="50" cy="10" r="4"/></svg>'
+  skaale: '<svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 30c0 0 10 38 45 38s45-38 45-38"/><ellipse cx="60" cy="30" rx="45" ry="9"/><path d="M25 30q10-4 20 0t20 0 20 0" opacity=".5"/><path d="M22 33q10-3 20 1t20 1 20-1" opacity=".3"/></svg>',
+  kopper: '<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M35 30c-2 0-3 2-3 5l4 53c.5 6 6 10 14 10h12c8 0 13.5-4 14-10l4-53c0-3-1-5-3-5z"/><path d="M80 42c14 0 18 10 16 20-2 10-12 14-18 12"/><path d="M34 30c0-6 7-10 22-10s22 4 22 10-7 7-22 7-22-1-22-7z"/></svg>',
+  fade: '<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.1"><circle cx="60" cy="60" r="47"/><circle cx="60" cy="60" r="31"/></svg>',
+  pynt: '<svg viewBox="0 0 100 130" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M50 34c18 0 30 16 30 36 0 22-14 36-30 36s-30-14-30-36c0-20 12-36 30-36z"/><path d="M43 20c0-5 3-8 7-8s7 3 7 8v14H43z"/><circle cx="50" cy="10" r="4"/></svg>',
+  maelkekander: '<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M40 28h30l-4 60c-.4 6-5 10-11 10h0c-6 0-10.6-4-11-10z"/><path d="M70 40c12 2 18 12 14 24-3 10-13 14-20 10"/><path d="M38 28c0-5 6-9 16-9s16 4 16 9-6 6-16 6-16-1-16-6z"/></svg>',
+  shotglas: '<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M44 30h32l-6 55c-.5 5-4.5 9-10 9h0c-5.5 0-9.5-4-10-9z"/><path d="M42 30h36"/></svg>',
+  figurer: '<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="60" cy="34" r="14"/><path d="M34 100c2-24 12-38 26-38s24 14 26 38"/></svg>',
+  vindspil: '<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="60" cy="18" r="6"/><path d="M60 24v14M30 38h60M36 38v50M52 38v60M68 38v45M84 38v55"/></svg>'
 };
 
 function renderProductArt(p){
@@ -155,10 +194,10 @@ async function renderShopGrid(){
     const p = PRODUCTS[id];
     const img = p.billeder && p.billeder[0]
       ? `<img src="${p.billeder[0]}" alt="${p.navn}" style="width:100%;height:100%;object-fit:cover;">`
-      : (ART_ICONS[p.icon] || '');
+      : (ART_ICONS[p.icon] || ART_ICONS[p.cat] || '');
     const desc = (p.story && p.story[0]) ? p.story[0].slice(0,90) + '…' : '';
     return `
-      <a href="produkt.html?id=${id}" class="p-card" data-cat="${p.cat}">
+      <a href="produkt.html?id=${id}" class="p-card" data-cat="${p.cat}" data-sub="${p.subCat}">
         <div class="thumb"><span class="stock">Unika · ${p.navn}</span>${img}</div>
         <div class="row"><h3>${p.navn}</h3><span class="price">${p.pris}</span></div>
         <div class="cat">${p.typeLabel}</div>
@@ -166,6 +205,67 @@ async function renderShopGrid(){
       </a>`;
   }).join('');
   setupShopFilter();
+}
+
+function setupShopFilter(){
+  const tabs = document.querySelectorAll('.tab');
+  const subtabsWrap = document.getElementById('subtabs');
+  const cards = document.querySelectorAll('.p-card');
+  const hankCats = ['kopper','maelkekander','shotglas'];
+  const subLabels = { 'alle':'Alle', 'med-hank':'Med hank', 'uden-hank':'Uden hank' };
+
+  let currentCat = 'alle';
+  let currentSub = 'alle';
+
+  function renderSubtabs(){
+    if(!subtabsWrap) return;
+    if(!hankCats.includes(currentCat)){
+      subtabsWrap.innerHTML = '';
+      subtabsWrap.style.display = 'none';
+      return;
+    }
+    subtabsWrap.style.display = 'flex';
+    subtabsWrap.innerHTML = ['alle','med-hank','uden-hank'].map(sub =>
+      `<button type="button" class="subtab${sub===currentSub?' active':''}" data-sub="${sub}">${subLabels[sub]}</button>`
+    ).join('');
+    subtabsWrap.querySelectorAll('.subtab').forEach(btn => {
+      btn.addEventListener('click', () => { currentSub = btn.dataset.sub; applyFilter(); });
+    });
+  }
+
+  function applyFilter(){
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.cat === currentCat));
+    cards.forEach(card => {
+      const catMatch = currentCat === 'alle' || card.dataset.cat === currentCat;
+      const subMatch = currentSub === 'alle' || card.dataset.sub === currentSub;
+      card.style.display = (catMatch && subMatch) ? '' : 'none';
+    });
+    renderSubtabs();
+  }
+
+  tabs.forEach(tab => tab.addEventListener('click', () => {
+    currentCat = tab.dataset.cat;
+    currentSub = 'alle';
+    applyFilter();
+  }));
+
+  // Support hashes like #kopper, #kopper-med-hank, #kopper-uden-hank
+  const hash = window.location.hash.replace('#','');
+  let initCat = 'alle', initSub = 'alle';
+  if(hash){
+    if(document.querySelector(`.tab[data-cat="${hash}"]`)){
+      initCat = hash;
+    } else if(hash.endsWith('-med-hank')){
+      initCat = hash.replace('-med-hank','');
+      initSub = 'med-hank';
+    } else if(hash.endsWith('-uden-hank')){
+      initCat = hash.replace('-uden-hank','');
+      initSub = 'uden-hank';
+    }
+  }
+  currentCat = document.querySelector(`.tab[data-cat="${initCat}"]`) ? initCat : 'alle';
+  currentSub = initSub;
+  applyFilter();
 }
 
 function setupShopFilter(){
