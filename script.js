@@ -74,7 +74,8 @@ function rowToProduct(row){
     pris: row.pris,
     icon: (row.icon && row.icon.trim()) ? row.icon.trim() : cat,
     typeLabel: label,
-    serieLabel: row.kollektion,
+    serieLabel: splitList(row.kollektion).join(', '),
+    kollektioner: splitList(row.kollektion),
     crumbCat: label,
     crumbHref: crumbHref,
     moreText: `Se flere ${label.toLowerCase()}`,
@@ -184,27 +185,73 @@ async function populateProductPage(){
   const crumbName = document.getElementById('p-crumb-name');
   if(crumbName) crumbName.textContent = p.navn;
   renderProductArt(p);
+  renderRelatedProducts(id);
+}
+
+function buildProductCardHtml(id, p){
+  const img = p.billeder && p.billeder[0]
+    ? `<img src="${p.billeder[0]}" alt="${p.navn}" style="width:100%;height:100%;object-fit:cover;">`
+    : (ART_ICONS[p.icon] || ART_ICONS[p.cat] || '');
+  const desc = (p.story && p.story[0]) ? p.story[0].slice(0,90) + '…' : '';
+  return `
+    <a href="produkt.html?id=${id}" class="p-card" data-cat="${p.cat}" data-sub="${p.subCat}">
+      <div class="thumb"><span class="stock">Unika · ${p.navn}</span>${img}</div>
+      <div class="row"><h3>${p.navn}</h3><span class="price">${p.pris}</span></div>
+      <div class="cat">${p.typeLabel}</div>
+      <p class="desc">${desc}</p>
+    </a>`;
+}
+
+function shuffleArray(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 async function renderShopGrid(){
+  if(!document.querySelector('.tabs')) return; // kun butiksiden har faner
   const grid = document.querySelector('.product-grid');
   if(!grid) return;
   await loadProducts();
-  grid.innerHTML = Object.keys(PRODUCTS).map(id => {
-    const p = PRODUCTS[id];
-    const img = p.billeder && p.billeder[0]
-      ? `<img src="${p.billeder[0]}" alt="${p.navn}" style="width:100%;height:100%;object-fit:cover;">`
-      : (ART_ICONS[p.icon] || ART_ICONS[p.cat] || '');
-    const desc = (p.story && p.story[0]) ? p.story[0].slice(0,90) + '…' : '';
-    return `
-      <a href="produkt.html?id=${id}" class="p-card" data-cat="${p.cat}" data-sub="${p.subCat}">
-        <div class="thumb"><span class="stock">Unika · ${p.navn}</span>${img}</div>
-        <div class="row"><h3>${p.navn}</h3><span class="price">${p.pris}</span></div>
-        <div class="cat">${p.typeLabel}</div>
-        <p class="desc">${desc}</p>
-      </a>`;
-  }).join('');
+  grid.innerHTML = Object.keys(PRODUCTS).map(id => buildProductCardHtml(id, PRODUCTS[id])).join('');
   setupShopFilter();
+}
+
+function getRelatedProducts(currentId, limit = 4){
+  const current = PRODUCTS[currentId];
+  if(!current || !current.kollektioner || !current.kollektioner.length) return [];
+  const scored = Object.keys(PRODUCTS)
+    .filter(id => id !== currentId)
+    .map(id => {
+      const p = PRODUCTS[id];
+      const shared = (p.kollektioner || []).filter(k => current.kollektioner.includes(k)).length;
+      return { id, p, shared };
+    })
+    .filter(x => x.shared > 0);
+  return shuffleArray(scored).sort((a, b) => b.shared - a.shared).slice(0, limit);
+}
+
+async function renderRelatedProducts(currentId){
+  const wrap = document.getElementById('p-related');
+  if(!wrap) return;
+  const related = getRelatedProducts(currentId, 4);
+  const section = wrap.closest('section');
+  if(!related.length){
+    if(section) section.style.display = 'none';
+    return;
+  }
+  wrap.innerHTML = related.map(r => buildProductCardHtml(r.id, r.p)).join('');
+}
+
+async function renderRandomProducts(){
+  const grid = document.getElementById('home-random-grid');
+  if(!grid) return;
+  await loadProducts();
+  const ids = shuffleArray(Object.keys(PRODUCTS)).slice(0, 6);
+  grid.innerHTML = ids.map(id => buildProductCardHtml(id, PRODUCTS[id])).join('');
 }
 
 function setupShopFilter(){
@@ -249,7 +296,6 @@ function setupShopFilter(){
     applyFilter();
   }));
 
-  // Support hashes like #kopper, #kopper-med-hank, #kopper-uden-hank
   const hash = window.location.hash.replace('#','');
   let initCat = 'alle', initSub = 'alle';
   if(hash){
@@ -266,21 +312,6 @@ function setupShopFilter(){
   currentCat = document.querySelector(`.tab[data-cat="${initCat}"]`) ? initCat : 'alle';
   currentSub = initSub;
   applyFilter();
-}
-
-function setupShopFilter(){
-  const tabs = document.querySelectorAll('.tab');
-  const cards = document.querySelectorAll('.p-card');
-  const applyFilter = (cat) => {
-    tabs.forEach(t => t.classList.toggle('active', t.dataset.cat === cat));
-    cards.forEach(card => {
-      const show = cat === 'alle' || card.dataset.cat === cat;
-      card.style.display = show ? '' : 'none';
-    });
-  };
-  tabs.forEach(tab => tab.addEventListener('click', () => applyFilter(tab.dataset.cat)));
-  const hash = window.location.hash.replace('#', '');
-  applyFilter(hash && document.querySelector(`.tab[data-cat="${hash}"]`) ? hash : 'alle');
 }
 
 // Mobile nav toggle
@@ -325,6 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
  renderShopGrid();
+ renderRandomProducts();
 
   // Demo contact form — prevent real submit, show a styled confirmation
   const form = document.querySelector('#demo-form');
