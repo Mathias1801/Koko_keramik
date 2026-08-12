@@ -24,7 +24,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run sync script
-        run: python sync_products.py
+        run: python Fetch_store_info.py
 
       - name: Commit and push if changed
         run: |
