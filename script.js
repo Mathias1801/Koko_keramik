@@ -193,8 +193,9 @@ function buildProductCardHtml(id, p){
     ? `<img src="${p.billeder[0]}" alt="${p.navn}" style="width:100%;height:100%;object-fit:cover;">`
     : (ART_ICONS[p.icon] || ART_ICONS[p.cat] || '');
   const desc = (p.story && p.story[0]) ? p.story[0].slice(0,90) + '…' : '';
+  const kollektionAttr = (p.kollektioner || []).join('|');
   return `
-    <a href="produkt.html?id=${id}" class="p-card" data-cat="${p.cat}" data-sub="${p.subCat}">
+    <a href="produkt.html?id=${id}" class="p-card" data-cat="${p.cat}" data-sub="${p.subCat}" data-kollektioner="${kollektionAttr}">
       <div class="thumb"><span class="stock">Unika · ${p.navn}</span>${img}</div>
       <div class="row"><h3>${p.navn}</h3><span class="price">${p.pris}</span></div>
       <div class="cat">${p.typeLabel}</div>
@@ -254,15 +255,52 @@ async function renderRandomProducts(){
   grid.innerHTML = ids.map(id => buildProductCardHtml(id, PRODUCTS[id])).join('');
 }
 
+async function renderKollektionNav(){
+  const col = document.getElementById('nav-kollektioner-col');
+  if(!col) return;
+  await loadProducts();
+  const all = new Set();
+  Object.values(PRODUCTS).forEach(p => (p.kollektioner || []).forEach(k => all.add(k)));
+  const list = Array.from(all).sort((a,b) => a.localeCompare(b, 'da'));
+  if(!list.length){
+    col.style.display = 'none';
+    return;
+  }
+  col.innerHTML = '<h5>Kollektioner</h5>' + list.map(k =>
+    `<a href="butik.html?kollektion=${encodeURIComponent(k)}">${k}</a>`
+  ).join('');
+}
+
 function setupShopFilter(){
   const tabs = document.querySelectorAll('.tab');
   const subtabsWrap = document.getElementById('subtabs');
+  const kollektionBanner = document.getElementById('kollektion-banner');
   const cards = document.querySelectorAll('.p-card');
   const hankCats = ['kopper','maelkekander','shotglas'];
   const subLabels = { 'alle':'Alle', 'med-hank':'Med hank', 'uden-hank':'Uden hank' };
 
   let currentCat = 'alle';
   let currentSub = 'alle';
+  let currentKollektion = new URLSearchParams(window.location.search).get('kollektion') || '';
+
+  function renderKollektionBanner(){
+    if(!kollektionBanner) return;
+    if(!currentKollektion){
+      kollektionBanner.innerHTML = '';
+      kollektionBanner.style.display = 'none';
+      return;
+    }
+    kollektionBanner.style.display = 'flex';
+    kollektionBanner.innerHTML = `<span>Viser kollektion: <strong>${currentKollektion}</strong></span><button type="button" id="kollektion-clear">Nulstil ×</button>`;
+    document.getElementById('kollektion-clear').addEventListener('click', () => {
+      currentKollektion = '';
+      const url = new URL(window.location.href);
+      url.searchParams.delete('kollektion');
+      window.history.replaceState({}, '', url);
+      renderKollektionBanner();
+      applyFilter();
+    });
+  }
 
   function renderSubtabs(){
     if(!subtabsWrap) return;
@@ -285,7 +323,8 @@ function setupShopFilter(){
     cards.forEach(card => {
       const catMatch = currentCat === 'alle' || card.dataset.cat === currentCat;
       const subMatch = currentSub === 'alle' || card.dataset.sub === currentSub;
-      card.style.display = (catMatch && subMatch) ? '' : 'none';
+      const kollektionMatch = !currentKollektion || (card.dataset.kollektioner || '').split('|').includes(currentKollektion);
+      card.style.display = (catMatch && subMatch && kollektionMatch) ? '' : 'none';
     });
     renderSubtabs();
   }
@@ -311,12 +350,15 @@ function setupShopFilter(){
   }
   currentCat = document.querySelector(`.tab[data-cat="${initCat}"]`) ? initCat : 'alle';
   currentSub = initSub;
+  renderKollektionBanner();
   applyFilter();
 }
 
 // Mobile nav toggle
 document.addEventListener('DOMContentLoaded', () => {
   populateProductPage();
+  populateProductPage();
+  renderKollektionNav();
 
   // Rotating announcement bar
   const items = document.querySelectorAll('.announce-item');
