@@ -163,6 +163,11 @@ footer{border-top:1px solid var(--line);padding:68px 0 36px;}
 .subtab:hover{border-color:var(--clay);color:var(--clay);}
 .subtab.active{background:var(--clay);border-color:var(--clay);color:var(--card);}
 
+.kollektion-banner{display:none;align-items:center;gap:14px;margin:-10px 0 30px;padding:12px 18px;background:var(--bone-deep);border:1px solid var(--line);border-radius:4px;font-family:var(--font-mono);font-size:12.5px;}
+.kollektion-banner strong{color:var(--clay);}
+.kollektion-banner button{background:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;cursor:pointer;color:var(--ink-soft);font-family:var(--font-mono);font-size:11px;}
+.kollektion-banner button:hover{border-color:var(--clay);color:var(--clay);}
+
 .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:44px 30px;}
 .p-card{cursor:pointer;}
 .p-card .thumb{background:var(--card);aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:18px;box-shadow:0 1px 0 var(--line) inset;}
